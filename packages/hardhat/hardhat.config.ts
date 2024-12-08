@@ -9,6 +9,7 @@ import "solidity-coverage";
 import "@nomicfoundation/hardhat-verify";
 import "hardhat-deploy";
 import "hardhat-deploy-ethers";
+import "@tenderly/hardhat-tenderly";
 import { task } from "hardhat/config";
 import generateTsAbis from "./scripts/generateTsAbis";
 
@@ -19,6 +20,8 @@ const deployerPrivateKey =
 const etherscanApiKey = process.env.ETHERSCAN_MAINNET_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 const etherscanOptimisticApiKey = process.env.ETHERSCAN_OPTIMISTIC_API_KEY || "RM62RDISS1RH448ZY379NX625ASG1N633R";
 const basescanApiKey = process.env.BASESCAN_API_KEY || "ZZZEIPMT1MNJ8526VV2Y744CA7TNZR64G6";
+const privateKey = process.env.PRIVATE_KEY;
+const tenderlyUrl = process.env.TENDERLY_URL;
 
 // If not set, it uses ours Alchemy's default API key.
 // You can get your own at https://dashboard.alchemyapi.io
@@ -60,8 +63,8 @@ const config: HardhatUserConfig = {
       accounts: [deployerPrivateKey],
     },
     sepolia: {
-      url: `https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`,
-      accounts: [deployerPrivateKey],
+      url: tenderlyUrl,
+      accounts: [`${privateKey}`],
     },
     arbitrum: {
       url: `https://arb-mainnet.g.alchemy.com/v2/${providerApiKey}`,
@@ -172,6 +175,10 @@ const config: HardhatUserConfig = {
   },
   sourcify: {
     enabled: false,
+  },
+  tenderly: {
+    username: "Zoey42",
+    project: "NFT-marketplace",
   },
 };
 
