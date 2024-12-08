@@ -45,6 +45,9 @@
     "node": ">=18.18.0"
   },
   "dependencies": {
-    "@tenderly/hardhat-tenderly": "^2.5.1"
+    "@tenderly/hardhat-tenderly": "^2.5.1",
+    "@types/antd": "^1.0.4",
+    "antd": "^5.22.3",
+    "ipfs-http-client": "^60.0.1"
   }
 }
