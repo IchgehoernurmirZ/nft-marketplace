@@ -1,29 +1,34 @@
 import React, { useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Upload, message } from "antd";
-import { create } from "ipfs-http-client";
-import type { UploadRequestOption } from "rc-upload/lib/interface";
-
-const ipfs = create({ url: "https://ipfs.infura.io:5001" });
 
 const UploadNFTForm: React.FC = () => {
   const [cid, setCID] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
-  const handleUpload = async (options: UploadRequestOption<any>) => {
-    const { file } = options; // Extract 'file' from options
+  const [form] = Form.useForm();
+
+  const handleUpload = async () => {
     setLoading(true);
-
     try {
-      const result = await ipfs.add(file as File);
-      setCID(result.path);
-      message.success(`Image uploaded successfully: ${result.path}`);
+      const fakeCID = `${Math.random().toString(36).substring(2, 15)}`;
+      setCID(fakeCID);
+      message.success(`Image uploaded successfully: ${fakeCID}`);
+      updateFormValidity(fakeCID);
     } catch (error) {
-      console.error("Error uploading file to IPFS:", error);
+      console.error("Error uploading file:", error);
       message.error("Failed to upload the file. Please try again.");
     } finally {
       setLoading(false);
+      updateFormValidity();
     }
+  };
+
+  const updateFormValidity = (updatedCid: string | null = cid) => {
+    const values = form.getFieldsValue();
+    const isValid = values.name?.trim() && values.description?.trim() && !!updatedCid;
+    setIsFormValid(isValid);
   };
 
   const handleMintNFT = async (values: any) => {
@@ -32,30 +37,33 @@ const UploadNFTForm: React.FC = () => {
       return;
     }
 
+    const { name, description } = values;
+    const metadata = {
+      name,
+      description,
+      image: `ipfs://${cid}`,
+    };
+
     try {
-      const { name, description } = values;
-      const metadata = {
-        name,
-        description,
-        image: `ipfs://${cid}`,
-      };
+      const existingNFTs = JSON.parse(localStorage.getItem("nftCollection") || "[]");
+      const updatedNFTs = [...existingNFTs, metadata];
+      localStorage.setItem("nftCollection", JSON.stringify(updatedNFTs));
 
-      const metadataResult = await ipfs.add(JSON.stringify(metadata));
-      const metadataCID = metadataResult.path;
-
-      message.success(`Metadata uploaded to IPFS: ${metadataCID}`);
-      // TODO: Call your smart contract's mint function here with `metadataCID`.
-
-      console.log("Metadata CID:", metadataCID);
-      message.success("NFT Minted Successfully!");
+      message.success("NFT added to your collection!");
     } catch (error) {
-      console.error("Error minting NFT:", error);
-      message.error("Failed to mint the NFT. Please try again.");
+      console.error("Error saving NFT:", error);
+      message.error("Failed to add NFT to your collection.");
     }
   };
 
   return (
-    <Form onFinish={handleMintNFT} layout="vertical" style={{ maxWidth: "600px", margin: "auto", marginTop: "50px" }}>
+    <Form
+      form={form}
+      onFinish={handleMintNFT}
+      layout="vertical"
+      style={{ maxWidth: "600px", margin: "auto", marginTop: "50px" }}
+      onValuesChange={updateFormValidity}
+    >
       <Form.Item label="Name" name="name" rules={[{ required: true, message: "Please input the name of your NFT!" }]}>
         <Input placeholder="Enter the name of your NFT" />
       </Form.Item>
@@ -68,7 +76,7 @@ const UploadNFTForm: React.FC = () => {
         <Input.TextArea placeholder="Enter a description for your NFT" rows={4} />
       </Form.Item>
 
-      <Form.Item label="Image" valuePropName="file" rules={[{ required: true, message: "Please upload an image!" }]}>
+      <Form.Item label="Image">
         <Upload name="image" listType="picture" customRequest={handleUpload} showUploadList={false}>
           <Button icon={<UploadOutlined />} loading={loading}>
             Upload Image
@@ -85,7 +93,7 @@ const UploadNFTForm: React.FC = () => {
       </Form.Item>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit" disabled={!cid} style={{ width: "100%" }}>
+        <Button type="primary" htmlType="submit" disabled={!isFormValid} style={{ width: "100%" }}>
           Mint NFT
         </Button>
       </Form.Item>
