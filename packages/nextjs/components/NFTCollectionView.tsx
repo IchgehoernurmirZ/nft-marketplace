@@ -17,33 +17,22 @@ const NFTCollectionView: React.FC = () => {
   return (
     <div style={{ padding: "20px" }}>
       <Title level={2}>Your NFT Collection</Title>
-      {nftCollection.length > 0 ? (
-        <Row gutter={[16, 16]}>
-          {nftCollection.map((nft, index) => (
+      <Row gutter={[16, 16]}>
+        {nftCollection.length > 0 ? (
+          nftCollection.map((nft, index) => (
             <Col key={index} xs={24} sm={12} md={8} lg={6}>
               <Card
-              hoverable
-              cover={
-                <img
-                  alt={nft.name}
-                  src={
-                    nft.image
-                      ? `https://ipfs.io/ipfs/${nft.image.split("ipfs://")[1]}`
-                      : "https://via.placeholder.com/200"
-                  }
-                  style={{ height: "200px", objectFit: "cover" }}
-                />
-              }
-            >
-              <Meta title={nft.name} description={nft.description} />
-            </Card>
-
+                hoverable
+                cover={<img alt={nft.name} src={nft.image} style={{ height: "200px", objectFit: "cover" }} />}
+              >
+                <Meta title={nft.name} description={nft.description} />
+              </Card>
             </Col>
-          ))}
-        </Row>
-      ) : (
-        <p>You haven't added any NFTs yet! Start minting your collection now.</p>
-      )}
+          ))
+        ) : (
+          <p>No NFTs found. Upload some NFTs to view your collection.</p>
+        )}
+      </Row>
     </div>
   );
 };
