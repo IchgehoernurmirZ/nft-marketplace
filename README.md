@@ -1,88 +1,124 @@
-# 🏗 Scaffold-ETH 2
+# NFT Marketplace
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+This project is an **NFT Marketplace** built using modern web technologies. Users can mint NFTs, edit their metadata, delete them, place them up for auction, and view their collections. The project leverages local storage for mock data handling, while allowing integration with blockchain for auction and storage.
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+## Features
 
-⚙️ Built using NextJS, RainbowKit, Foundry/Hardhat, Wagmi, Viem, and Typescript.
+- **Mint NFTs**: Users can mint NFTs by uploading an image and providing a name and description.
+- **Edit NFTs**: Users can update the metadata of their minted NFTs.
+- **Delete NFTs**: Users can remove unwanted NFTs from their collection.
+- **Auction NFTs**: Users can set their NFTs for auction (future integration with blockchain for smart contract handling).
+- **View Collection**: Users can view all their NFTs in a styled card layout.
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+## Technologies Used
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+### Frontend
+- **React**: Library for building the user interface.
+- **Next.js**: Framework for server-rendered React applications.
+- **Ant Design**: UI library for styling and components.
+- **TypeScript**: For static typing and improved developer experience.
 
-## Requirements
+### Blockchain
+- **Hardhat**: Ethereum development environment.
+- **Ethers.js**: JavaScript library for interacting with Ethereum.
 
-Before you begin, you need to install the following tools:
+### Storage
+- **LocalStorage**: Mock storage for NFTs and metadata.
+- **IPFS (Optional)**: Future integration for decentralized file storage.
 
-- [Node (>= v18.18)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+### Deployment
+- **Vercel**: For hosting the frontend application.
 
-## Quickstart
+## Installation
 
-To get started with Scaffold-ETH 2, follow the steps below:
+To set up the project locally, follow these steps:
 
-1. Install the latest version of Scaffold-ETH 2
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/your-username/nft-marketplace.git
+   cd nft-marketplace
+   ```
+
+2. **Install Dependencies**:
+   ```bash
+   yarn install
+   ```
+
+3. **Run the Development Server**:
+   ```bash
+   yarn dev
+   ```
+
+4. **Run Blockchain (Optional)**:
+   - Install Hardhat globally:
+     ```bash
+     npm install --save-dev hardhat
+     ```
+   - Run the local Ethereum network:
+     ```bash
+     npx hardhat node
+     ```
+   - Deploy smart contracts:
+     ```bash
+     npx hardhat run scripts/deploy.js --network localhost
+     ```
+
+5. **Visit the Application**:
+   Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
+
+## Project Structure
 
 ```
-npx create-eth@latest
+.
+├── components
+│   ├── Header.tsx            # Header component with navigation
+│   ├── NFTCollectionView.tsx # Displays the collection of NFTs
+│   ├── UploadNFTForm.tsx     # Form for minting NFTs
+├── pages
+│   ├── index.tsx             # Homepage
+│   ├── collection.tsx        # NFT Collection page
+├── contracts
+│   ├── NFTMarketplace.sol    # Smart contract (optional)
+├── public                    # Public assets
+├── styles                    # Global and component styles
+├── package.json              # Project metadata
+└── README.md                 # Project documentation
 ```
 
-This command will install all the necessary packages and dependencies, so it might take a while.
+## Deployment
 
-> [!NOTE]
-> You can also initialize your project with one of our extensions to add specific features or starter-kits. Learn more in our [extensions documentation](https://docs.scaffoldeth.io/extensions/).
+To deploy the project:
 
-2. Run a local network in the first terminal:
+1. **Push Code to GitHub**:
+   Ensure all code is committed and pushed to a GitHub repository.
 
-```
-yarn chain
-```
+2. **Connect Vercel**:
+   - Go to [Vercel](https://vercel.com/).
+   - Connect your GitHub repository.
 
-This command starts a local Ethereum network that runs on your local machine and can be used for testing and development. Learn how to [customize your network configuration](https://docs.scaffoldeth.io/quick-start/environment#1-initialize-a-local-blockchain).
+3. **Set Environment Variables**:
+   - Add any required environment variables (e.g., for Hardhat or API keys).
 
-3. On a second terminal, deploy the test contract:
+4. **Deploy**:
+   Vercel will automatically build and deploy the project.
 
-```
-yarn deploy
-```
+## Roadmap
 
-This command deploys a test smart contract to the local network. You can find more information about how to customize your contract and deployment script in our [documentation](https://docs.scaffoldeth.io/quick-start/environment#2-deploy-your-smart-contract).
+- [ ] Integrate IPFS for decentralized storage.
+- [ ] Implement blockchain-based auction functionality.
+- [ ] Add authentication using WalletConnect or MetaMask.
+- [ ] Improve UI/UX with animations and advanced design patterns.
 
-4. On a third terminal, start your NextJS app:
+## Contributing
 
-```
-yarn start
-```
+Contributions are welcome! Please open an issue or submit a pull request for any improvements.
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+## License
 
-**What's next**:
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
-Visit the [What's next section of our docs](https://docs.scaffoldeth.io/quick-start/environment#whats-next) to learn how to:
+## Acknowledgments
 
-- Edit your smart contracts
-- Edit your deployment scripts
-- Customize your frontend
-- Edit the app config
-- Writing and running tests
-- [Setting up external services and API keys](https://docs.scaffoldeth.io/deploying/deploy-smart-contracts#configuration-of-third-party-services-for-production-grade-apps)
-
-## Documentation
-
-Visit our [docs](https://docs.scaffoldeth.io) to learn all the technical details and guides of Scaffold-ETH 2.
-
-To know more about its features, check out our [website](https://scaffoldeth.io).
-
-## Contributing to Scaffold-ETH 2
-
-We welcome contributions to Scaffold-ETH 2!
-
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+- [Ant Design](https://ant.design/)
+- [Next.js](https://nextjs.org/)
+- [Hardhat](https://hardhat.org/)
