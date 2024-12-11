@@ -47,7 +47,7 @@
   "dependencies": {
     "@tenderly/hardhat-tenderly": "^2.5.1",
     "@types/antd": "^1.0.4",
-    "antd": "^5.22.3",
+    "antd": "^5.22.4",
     "dotenv": "^16.4.7",
     "ipfs-http-client": "^60.0.1"
   }
