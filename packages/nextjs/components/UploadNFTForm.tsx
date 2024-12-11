@@ -5,7 +5,6 @@ import { Upload, Button, Form, Input, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
 const UploadNFTForm: React.FC = () => {
-  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
   const handleFinish = (values: { name: string; description: string; file: any }) => {
@@ -65,7 +64,7 @@ const UploadNFTForm: React.FC = () => {
         </Upload>
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit" loading={loading}>
+        <Button type="primary" htmlType="submit">
           Mint NFT
         </Button>
       </Form.Item>
