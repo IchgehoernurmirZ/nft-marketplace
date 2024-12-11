@@ -75,13 +75,13 @@ const NFTCollectionView: React.FC = () => {
                 hoverable
                 cover={<img alt={nft.name} src={nft.image} style={{ height: "200px", objectFit: "cover" }} />}
                 actions={[
-                  <Button type="primary" onClick={() => handleEdit(nft, index)}>
+                  <Button key={`edit-${index}`} type="primary" onClick={() => handleEdit(nft, index)}>
                     Edit
                   </Button>,
-                  <Button type="primary" onClick={() => handleAuction(nft)}>
+                  <Button key={`auction-${index}`} type="primary" onClick={() => handleAuction(nft)}>
                     Auction
                   </Button>,
-                  <Button type="primary" danger onClick={() => handleDelete(index)}>
+                  <Button key={`delete-${index}`} type="primary" danger onClick={() => handleDelete(index)}>
                     Delete
                   </Button>,
                 ]}
