@@ -23,8 +23,7 @@ This project is an **NFT Marketplace** built using modern web technologies. User
 - **Ethers.js**: JavaScript library for interacting with Ethereum.
 
 ### Storage
-- **LocalStorage**: Mock storage for NFTs and metadata.
-- **IPFS (Optional)**: Future integration for decentralized file storage.
+- **IPFS**: Integration for decentralized file storage.
 
 ### Deployment
 - **Vercel**: For hosting the frontend application.
