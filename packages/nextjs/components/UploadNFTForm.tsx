@@ -6,34 +6,37 @@ import { UploadOutlined } from "@ant-design/icons";
 
 const UploadNFTForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
 
   const handleFinish = (values: { name: string; description: string; file: any }) => {
     const { name, description, file } = values;
   
-    // Get the file object correctly
     const uploadedFile = file.fileList[0]?.originFileObj;
     if (!uploadedFile) {
       message.error("No file uploaded!");
       return;
     }
   
-    const mockCID = `mock-cid-${Date.now()}`; // Generate a fake CID
+    const mockCID = `mock-cid-${Date.now()}`; 
   
     const nftCollection = JSON.parse(localStorage.getItem("nftCollection") || "[]");
     const newNFT = {
       name,
       description,
       cid: mockCID,
-      image: URL.createObjectURL(uploadedFile), // Generate local URL for the uploaded file
+      image: URL.createObjectURL(uploadedFile), 
     };
   
     nftCollection.push(newNFT);
     localStorage.setItem("nftCollection", JSON.stringify(nftCollection));
     message.success("NFT uploaded successfully!");
+
+    form.resetFields();
   };
   
   return (
     <Form
+      form={form}
       layout="vertical"
       onFinish={handleFinish}
       initialValues={{ name: "", description: "" }}
