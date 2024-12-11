@@ -70,7 +70,7 @@ const NFTCollectionView: React.FC = () => {
       {nftCollection.length > 0 ? (
         <Row gutter={[16, 16]}>
           {nftCollection.map((nft, index) => (
-            <Col key={index} xs={24} sm={12} md={8} lg={6}>
+            <Col key={nft.id || index} xs={24} sm={12} md={8} lg={6}>
               <Card
                 hoverable
                 cover={<img alt={nft.name} src={nft.image} style={{ height: "200px", objectFit: "cover" }} />}
