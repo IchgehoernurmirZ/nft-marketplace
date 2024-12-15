@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { UploadOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Upload, message } from "antd";
 import axios from "axios";
 
 const UploadNFTForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [cid, setCID] = useState<string | null>(null);
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const PINATA_API_KEY = "b06ae8f0f25a0f1f41a8";
@@ -44,9 +45,15 @@ const UploadNFTForm: React.FC = () => {
       });
 
       const fileCID = res.data.IpfsHash;
+      const cidURL = `https://gateway.pinata.cloud/ipfs/${fileCID}`;
 
-      setCID(`https://gateway.pinata.cloud/ipfs/${fileCID}`);
-      message.success("File uploaded to IPFS successfully!");
+      const storedData = JSON.parse(localStorage.getItem("nftCollection") || "[]");
+      const newMetadata = { name, description, url: cidURL };
+      localStorage.setItem("nftCollection", JSON.stringify([...storedData, newMetadata]));
+
+      message.success("File uploaded successfully!");
+
+      router.push("/collection");
     } catch (error) {
       console.error("Pinata upload failed:", error);
       message.error("Failed to upload file to IPFS via Pinata.");
@@ -83,17 +90,6 @@ const UploadNFTForm: React.FC = () => {
           </Button>
         </Form.Item>
       </Form>
-
-      {cid && (
-        <div style={{ marginTop: "20px" }}>
-          <p>
-            <strong>File URL:</strong>{" "}
-            <a href={cid} target="_blank" rel="noopener noreferrer">
-              {cid}
-            </a>
-          </p>
-        </div>
-      )}
     </div>
   );
 };

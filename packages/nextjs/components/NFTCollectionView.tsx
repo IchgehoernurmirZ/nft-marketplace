@@ -115,7 +115,20 @@ const NFTCollectionView: React.FC = () => {
                   </Button>,
                 ]}
               >
-                <Meta title={nft.name} description={nft.description} />
+                <Meta
+                  title={nft.name}
+                  description={
+                    <>
+                      <p>{nft.description}</p>
+                      <p>
+                        <strong>Metadata:</strong>{" "}
+                        <a href={nft.url} target="_blank" rel="noopener noreferrer">
+                          {nft.url}
+                        </a>
+                      </p>
+                    </>
+                  }
+                />
               </Card>
             </Col>
           ))}
