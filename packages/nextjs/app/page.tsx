@@ -10,6 +10,16 @@ import { Address } from "~~/components/scaffold-eth";
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
 
+  const [randomNFT, setRandomNFT] = useState(null);
+
+  useEffect(() => {
+    const storedNFTs = JSON.parse(localStorage.getItem("nftCollection") || "[]");
+    if (storedNFTs.length > 0) {
+      const randomIndex = Math.floor(Math.random() * storedNFTs.length);
+      setRandomNFT(storedNFTs[randomIndex]);
+    }
+  }, []);
+
   return (
     <>
       <div className="flex items-center flex-col flex-grow pt-10">
@@ -29,6 +39,16 @@ const Home: NextPage = () => {
           </h1>
           <UploadNFTForm />
         </div>
+        <div>
+      {randomNFT && (
+        <div style={{ textAlign: "center" }}>
+          <h3>🌟 Featured NFT 🌟</h3>
+          <img src={randomNFT.url} alt={randomNFT.name} style={{ height: "300px", objectFit: "cover" }} />
+          <h3>{randomNFT.name}</h3>
+          <p>{randomNFT.description}</p>
+        </div>
+      )}
+    </div>
 
         <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
           <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
