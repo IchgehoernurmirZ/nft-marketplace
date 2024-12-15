@@ -152,10 +152,10 @@ const NFTCollectionView: React.FC = () => {
                   <Button key={`edit-${index}`} size="small" type="primary" onClick={() => handleEdit(nft, index)}>
                     Edit
                   </Button>,
-                  <Button key={`delete-${index}`} type="primary" danger onClick={() => handleDelete(index)}>
+                  <Button key={`delete-${index}`} size="small" type="primary" danger onClick={() => handleDelete(index)}>
                     Delete
                   </Button>,
-                  <Button key={`auction-${index}`} type="primary" onClick={() => handleAuction(nft)}>
+                  <Button key={`auction-${index}`} size="small" type="primary" onClick={() => handleAuction(nft)}>
                     Auction
                   </Button>,
                   <Button
