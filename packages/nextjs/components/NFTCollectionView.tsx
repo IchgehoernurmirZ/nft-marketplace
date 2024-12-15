@@ -6,6 +6,13 @@ import NFTCollectionABI from "~~/public/NFTCollection.json";
 const { Meta } = Card;
 const { Title } = Typography;
 
+type NFT = {
+  tokenId: number;
+  name: string;
+  description: string;
+  url: string;
+};
+
 const NFTCollectionView: React.FC = () => {
   const [nftCollection, setNFTCollection] = useState<any[]>([]);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -18,10 +25,12 @@ const NFTCollectionView: React.FC = () => {
   });
 
   useEffect(() => {
-    const storedNFTs = JSON.parse(localStorage.getItem("nftCollection") || "[]");
-    const uniqueNFTs = storedNFTs.filter(
-    (nft, index, self) => index === self.findIndex((t) => t.tokenId === nft.tokenId)
-  );
+    const storedNFTs: NFT[] = JSON.parse(localStorage.getItem("nftCollection") || "[]");
+
+const uniqueNFTs = storedNFTs.filter(
+  (nft: NFT, index: number, self: NFT[]) =>
+    index === self.findIndex((t) => t.tokenId === nft.tokenId)
+);
   setNFTCollection(uniqueNFTs); 
   }, []);
 
@@ -165,6 +174,7 @@ const NFTCollectionView: React.FC = () => {
                   </Button>,
                   <Button
                     key={`mint-${index}`}
+                    size="small"
                     type="primary"
                     onClick={() => handleMintNFT(nft.url, nft.name, nft.description)}
                   >
