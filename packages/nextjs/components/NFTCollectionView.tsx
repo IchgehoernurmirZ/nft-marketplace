@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Typography, Button, Input, Modal } from "antd";
+import { Button, Card, Col, Input, Modal, Row, Typography } from "antd";
 
 const { Meta } = Card;
 const { Title } = Typography;
@@ -8,11 +8,17 @@ const NFTCollectionView: React.FC = () => {
   const [nftCollection, setNFTCollection] = useState<any[]>([]);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [auctionModalVisible, setAuctionModalVisible] = useState(false);
+  const [mintModalVisible, setMintModalVisible] = useState(false);
   const [editNFT, setEditNFT] = useState<any>(null);
   const [auctionNFT, setAuctionNFT] = useState<any>(null);
   const [auctionDetails, setAuctionDetails] = useState({
     price: "",
     duration: "",
+  });
+  const [mintDetails, setMintDetails] = useState({
+    name: "",
+    description: "",
+    image: "",
   });
 
   useEffect(() => {
@@ -56,7 +62,7 @@ const NFTCollectionView: React.FC = () => {
       console.log("Auction started for NFT:", auctionNFT);
       console.log("Auction details:", auctionDetails);
       alert(
-        `Auction started for NFT: ${auctionNFT.name}\nStarting Price: ${auctionDetails.price} ETH\nDuration: ${auctionDetails.duration} hours`
+        `Auction started for NFT: ${auctionNFT.name}\nStarting Price: ${auctionDetails.price} ETH\nDuration: ${auctionDetails.duration} hours`,
       );
     }
     setAuctionModalVisible(false);
@@ -64,9 +70,32 @@ const NFTCollectionView: React.FC = () => {
     setAuctionDetails({ price: "", duration: "" });
   };
 
+  const handleMint = () => {
+    setMintModalVisible(true);
+  };
+
+  const mintNFT = () => {
+    const newNFT = {
+      id: Date.now(),
+      name: mintDetails.name,
+      description: mintDetails.description,
+      image: mintDetails.image || "https://via.placeholder.com/200", // Default placeholder image
+    };
+
+    const updatedCollection = [...nftCollection, newNFT];
+    setNFTCollection(updatedCollection);
+    localStorage.setItem("nftCollection", JSON.stringify(updatedCollection));
+    setMintModalVisible(false);
+    setMintDetails({ name: "", description: "", image: "" });
+    alert(`NFT "${newNFT.name}" minted successfully!`);
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <Title level={2}>Your NFT Collection</Title>
+      <Button type="primary" onClick={handleMint} style={{ marginBottom: "20px" }}>
+        Mint New NFT
+      </Button>
       {nftCollection.length > 0 ? (
         <Row gutter={[16, 16]}>
           {nftCollection.map((nft, index) => (
@@ -95,24 +124,41 @@ const NFTCollectionView: React.FC = () => {
         <p>No NFTs in your collection.</p>
       )}
 
+      {/* Mint Modal */}
+      <Modal title="Mint New NFT" visible={mintModalVisible} onOk={mintNFT} onCancel={() => setMintModalVisible(false)}>
+        <Input
+          placeholder="Name"
+          value={mintDetails.name}
+          onChange={e => setMintDetails({ ...mintDetails, name: e.target.value })}
+          style={{ marginBottom: "10px" }}
+        />
+        <Input.TextArea
+          placeholder="Description"
+          value={mintDetails.description}
+          onChange={e => setMintDetails({ ...mintDetails, description: e.target.value })}
+          rows={4}
+          style={{ marginBottom: "10px" }}
+        />
+        <Input
+          placeholder="Image URL"
+          value={mintDetails.image}
+          onChange={e => setMintDetails({ ...mintDetails, image: e.target.value })}
+        />
+      </Modal>
+
       {/* Edit Modal */}
       {editNFT && (
-        <Modal
-          title="Edit NFT"
-          visible={editModalVisible}
-          onOk={saveEdit}
-          onCancel={() => setEditModalVisible(false)}
-        >
+        <Modal title="Edit NFT" visible={editModalVisible} onOk={saveEdit} onCancel={() => setEditModalVisible(false)}>
           <Input
             placeholder="Name"
             value={editNFT.name}
-            onChange={(e) => setEditNFT({ ...editNFT, name: e.target.value })}
+            onChange={e => setEditNFT({ ...editNFT, name: e.target.value })}
             style={{ marginBottom: "10px" }}
           />
           <Input.TextArea
             placeholder="Description"
             value={editNFT.description}
-            onChange={(e) => setEditNFT({ ...editNFT, description: e.target.value })}
+            onChange={e => setEditNFT({ ...editNFT, description: e.target.value })}
             rows={4}
           />
         </Modal>
@@ -129,13 +175,13 @@ const NFTCollectionView: React.FC = () => {
           <Input
             placeholder="Starting Price (ETH)"
             value={auctionDetails.price}
-            onChange={(e) => setAuctionDetails({ ...auctionDetails, price: e.target.value })}
+            onChange={e => setAuctionDetails({ ...auctionDetails, price: e.target.value })}
             style={{ marginBottom: "10px" }}
           />
           <Input
             placeholder="Duration (Hours)"
             value={auctionDetails.duration}
-            onChange={(e) => setAuctionDetails({ ...auctionDetails, duration: e.target.value })}
+            onChange={e => setAuctionDetails({ ...auctionDetails, duration: e.target.value })}
             style={{ marginBottom: "10px" }}
           />
         </Modal>
