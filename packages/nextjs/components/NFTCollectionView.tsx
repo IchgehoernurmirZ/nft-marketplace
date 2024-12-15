@@ -19,7 +19,10 @@ const NFTCollectionView: React.FC = () => {
 
   useEffect(() => {
     const storedNFTs = JSON.parse(localStorage.getItem("nftCollection") || "[]");
-    setNFTCollection(storedNFTs);
+    const uniqueNFTs = storedNFTs.filter(
+    (nft, index, self) => index === self.findIndex((t) => t.tokenId === nft.tokenId)
+  );
+  setNFTCollection(uniqueNFTs); 
   }, []);
 
   const truncateText = (text: string, maxLength: number) => {
@@ -106,9 +109,11 @@ const NFTCollectionView: React.FC = () => {
       };
 
       setNFTCollection((prev) => {
-        const updatedCollection = [...prev, newNFT];
-        localStorage.setItem("nftCollection", JSON.stringify(updatedCollection));
-        return updatedCollection;
+        const isDuplicate = prev.some((nft) => nft.tokenId === newNFT.tokenId);
+        if (isDuplicate) return prev;
+        const updatedNFTs = [...prev, newNFT];
+        localStorage.setItem("nftCollection", JSON.stringify(updatedNFTs)); 
+        return updatedNFTs;
       });
 
       console.log("Token ID:", tokenId);
@@ -144,7 +149,7 @@ const NFTCollectionView: React.FC = () => {
       {nftCollection.length > 0 ? (
         <Row gutter={[16, 16]}>
           {nftCollection.map((nft, index) => (
-            <Col key={nft.id || index} xs={24} sm={12} md={8} lg={6}>
+            <Col key={nft.tokenId|| index} xs={24} sm={12} md={8} lg={6}>
               <Card
                 hoverable
                 cover={<img alt={nft.name} src={nft.url} style={{ height: "200px", objectFit: "cover" }} />}
