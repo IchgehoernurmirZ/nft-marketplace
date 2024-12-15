@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Input, Modal, Row, Typography } from "antd";
+import { Button, Card, Col, Input, Modal, Row, Typography, message } from "antd";
+import { ethers } from "ethers";
+import NFTCollectionABI from "~~/public/NFTCollection.json";
 
 const { Meta } = Card;
 const { Title } = Typography;
@@ -8,17 +10,11 @@ const NFTCollectionView: React.FC = () => {
   const [nftCollection, setNFTCollection] = useState<any[]>([]);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [auctionModalVisible, setAuctionModalVisible] = useState(false);
-  const [mintModalVisible, setMintModalVisible] = useState(false);
   const [editNFT, setEditNFT] = useState<any>(null);
   const [auctionNFT, setAuctionNFT] = useState<any>(null);
   const [auctionDetails, setAuctionDetails] = useState({
     price: "",
     duration: "",
-  });
-  const [mintDetails, setMintDetails] = useState({
-    name: "",
-    description: "",
-    image: "",
   });
 
   useEffect(() => {
@@ -56,6 +52,74 @@ const NFTCollectionView: React.FC = () => {
     setEditNFT(null);
   };
 
+  const handleMintNFT = async (imageURL: string, name: string, description: string) => {
+    try {
+      if (!window.ethereum) {
+        message.error("Please install MetaMask to mint an NFT.");
+        return;
+      }
+
+      const metadata = {
+        name: name || "NFT Name",
+        description: description || "NFT Description",
+        image: imageURL,
+      };
+
+      const metadataResponse = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          pinata_api_key: "b06ae8f0f25a0f1f41a8",
+          pinata_secret_api_key: "3dd2fb390cf7a90b9f6ea9617532d833468b1ac833d57aebe6f7c6ed5ce04252",
+        },
+        body: JSON.stringify(metadata),
+      });
+
+      const metadataData = await metadataResponse.json();
+      const metadataURL = `https://gateway.pinata.cloud/ipfs/${metadataData.IpfsHash}`;
+
+      const provider = new ethers.JsonRpcProvider(
+        "https://virtual.sepolia.rpc.tenderly.co/8801bf9a-1dff-40bb-aa0d-194f7d42d9c2",
+        {
+          name: "tenderly_sepolia",
+          chainId: 11155111,
+        },
+      );
+      const signer = await provider.getSigner();
+
+      const contractAddress = "0xC97d6E249120D0a4F569e4Ba5D169dBd1627a033";
+
+      const nftContract = new ethers.Contract(contractAddress, NFTCollectionABI.abi, signer);
+      const recipient = await signer.getAddress();
+
+      const tx = await nftContract.mintNFT(recipient, metadataURL);
+      message.loading("Minting NFT...");
+      const receipt = await tx.wait();
+
+      const tokenId = BigInt(receipt.logs[0]?.args?.tokenId).toString();
+
+      const newNFT = {
+        name: metadata.name,
+        description: metadata.description,
+        url: metadata.image,
+        tokenId: tokenId.toString(),
+      };
+
+      setNFTCollection((prev) => {
+        const updatedCollection = [...prev, newNFT];
+        localStorage.setItem("nftCollection", JSON.stringify(updatedCollection));
+        return updatedCollection;
+      });
+
+      console.log("Token ID:", tokenId);
+
+      message.success("NFT minted successfully!");
+    } catch (error) {
+      console.error("Error minting NFT:", error);
+      message.error("Failed to mint NFT. Please try again.");
+    }
+  };
+
   const handleAuction = (nft: any) => {
     setAuctionNFT(nft);
     setAuctionModalVisible(true);
@@ -74,32 +138,9 @@ const NFTCollectionView: React.FC = () => {
     setAuctionDetails({ price: "", duration: "" });
   };
 
-  const handleMint = () => {
-    setMintModalVisible(true);
-  };
-
-  const mintNFT = () => {
-    const newNFT = {
-      id: Date.now(),
-      name: mintDetails.name,
-      description: mintDetails.description,
-      image: mintDetails.image || "https://via.placeholder.com/200", // Default placeholder image
-    };
-
-    const updatedCollection = [...nftCollection, newNFT];
-    setNFTCollection(updatedCollection);
-    localStorage.setItem("nftCollection", JSON.stringify(updatedCollection));
-    setMintModalVisible(false);
-    setMintDetails({ name: "", description: "", image: "" });
-    alert(`NFT "${newNFT.name}" minted successfully!`);
-  };
-
   return (
     <div style={{ padding: "20px" }}>
       <Title level={2}>Your NFT Collection</Title>
-      <Button type="primary" onClick={handleMint} style={{ marginBottom: "20px" }}>
-        Mint New NFT
-      </Button>
       {nftCollection.length > 0 ? (
         <Row gutter={[16, 16]}>
           {nftCollection.map((nft, index) => (
@@ -108,14 +149,21 @@ const NFTCollectionView: React.FC = () => {
                 hoverable
                 cover={<img alt={nft.name} src={nft.url} style={{ height: "200px", objectFit: "cover" }} />}
                 actions={[
-                  <Button key={`edit-${index}`} type="primary" onClick={() => handleEdit(nft, index)}>
+                  <Button key={`edit-${index}`} size="small" type="primary" onClick={() => handleEdit(nft, index)}>
                     Edit
+                  </Button>,
+                  <Button key={`delete-${index}`} type="primary" danger onClick={() => handleDelete(index)}>
+                    Delete
                   </Button>,
                   <Button key={`auction-${index}`} type="primary" onClick={() => handleAuction(nft)}>
                     Auction
                   </Button>,
-                  <Button key={`delete-${index}`} type="primary" danger onClick={() => handleDelete(index)}>
-                    Delete
+                  <Button
+                    key={`mint-${index}`}
+                    type="primary"
+                    onClick={() => handleMintNFT(nft.url, nft.name, nft.description)}
+                  >
+                    Mint NFT
                   </Button>,
                 ]}
               >
@@ -130,6 +178,9 @@ const NFTCollectionView: React.FC = () => {
                           {truncateText(nft.url, 30)}
                         </a>
                       </p>
+                      <p>
+                        <strong>NFT Token ID:</strong> {nft.tokenId}
+                      </p>
                     </>
                   }
                 />
@@ -140,28 +191,6 @@ const NFTCollectionView: React.FC = () => {
       ) : (
         <p>No NFTs in your collection.</p>
       )}
-
-      {/* Mint Modal */}
-      <Modal title="Mint New NFT" visible={mintModalVisible} onOk={mintNFT} onCancel={() => setMintModalVisible(false)}>
-        <Input
-          placeholder="Name"
-          value={mintDetails.name}
-          onChange={e => setMintDetails({ ...mintDetails, name: e.target.value })}
-          style={{ marginBottom: "10px" }}
-        />
-        <Input.TextArea
-          placeholder="Description"
-          value={mintDetails.description}
-          onChange={e => setMintDetails({ ...mintDetails, description: e.target.value })}
-          rows={4}
-          style={{ marginBottom: "10px" }}
-        />
-        <Input
-          placeholder="Image URL"
-          value={mintDetails.image}
-          onChange={e => setMintDetails({ ...mintDetails, image: e.target.value })}
-        />
-      </Modal>
 
       {/* Edit Modal */}
       {editNFT && (

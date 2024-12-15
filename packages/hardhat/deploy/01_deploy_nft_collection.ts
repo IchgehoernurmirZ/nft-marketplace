@@ -1,23 +1,33 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
+const { ethers } = require("hardhat");
 
-const deployNFTCollection: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const { getNamedAccounts, deployments } = hre;
-  const { deploy } = deployments;
+async function main() {
+  const [deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with the account:", deployer.address);
 
-  const { deployer } = await getNamedAccounts();
+  // Get the contract factory
+  const NFTCollection = await ethers.getContractFactory("NFTCollection");
 
-  await deploy("NFTCollection", {
-    from: deployer,
-    args: [
-      "MyNFTCollection", // _name
-      "MNFT", // _symbol
-      "https://bafybeiessvmfjfozvnpht6kuirrgvxntwbotjtocrdts3sot2ohabtdbda.ipfs.w3s.link", // _baseTokenURI
-      deployer, // initialOwner
-    ],
-    log: true,
-  });
-};
+  // Define the parameters
+  const name = "MyNFTCollection";
+  const symbol = "MNFT";
+  const initialOwner = deployer.address;
 
-export default deployNFTCollection;
-deployNFTCollection.tags = ["NFTCollection"];
+  try {
+    // Deploy the contract
+    const nftCollection = await NFTCollection.deploy(name, symbol, initialOwner);
+    
+    // Wait for the deployment to be completed
+    await nftCollection.waitForDeployment();
+
+    // Get the deployed contract address
+    console.log("NFTCollection deployed to:", nftCollection.target);
+  } catch (error) {
+    console.error("Deployment error:", error);
+  }
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+

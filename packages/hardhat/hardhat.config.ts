@@ -20,8 +20,6 @@ const deployerPrivateKey =
 const etherscanApiKey = process.env.ETHERSCAN_MAINNET_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 const etherscanOptimisticApiKey = process.env.ETHERSCAN_OPTIMISTIC_API_KEY || "RM62RDISS1RH448ZY379NX625ASG1N633R";
 const basescanApiKey = process.env.BASESCAN_API_KEY || "ZZZEIPMT1MNJ8526VV2Y744CA7TNZR64G6";
-const privateKey = process.env.PRIVATE_KEY;
-const tenderlyUrl = process.env.TENDERLY_URL;
 
 // If not set, it uses ours Alchemy's default API key.
 // You can get your own at https://dashboard.alchemyapi.io
@@ -52,6 +50,10 @@ const config: HardhatUserConfig = {
   networks: {
     // View the networks that are pre-configured.
     // If the network you are looking for is not here you can add new network settings
+    virtual_sepolia: {
+      url: process.env.TENDERLY_URL,
+      chainId: 11155111,
+    },
     hardhat: {
       forking: {
         url: `https://eth-mainnet.alchemyapi.io/v2/${providerApiKey}`,
@@ -63,8 +65,8 @@ const config: HardhatUserConfig = {
       accounts: [deployerPrivateKey],
     },
     sepolia: {
-      url: tenderlyUrl,
-      accounts: [`${privateKey}`],
+      url: `https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`,
+      accounts: [deployerPrivateKey],
     },
     arbitrum: {
       url: `https://arb-mainnet.g.alchemy.com/v2/${providerApiKey}`,
@@ -178,7 +180,7 @@ const config: HardhatUserConfig = {
   },
   tenderly: {
     username: "Zoey42",
-    project: "NFT-marketplace",
+    project: "nft-marketplace",
   },
 };
 

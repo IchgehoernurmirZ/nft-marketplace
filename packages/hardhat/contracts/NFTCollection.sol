@@ -1,28 +1,28 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract NFTCollection is ERC721, Ownable {
-    uint256 public nextTokenId;
-    string public baseTokenURI;
-
+contract NFTCollection is ERC721URIStorage, Ownable {
+    uint256 public tokenCounter;
+    
     constructor(
-        string memory _name,
-        string memory _symbol,
-        string memory _baseTokenURI,
+        string memory name_,
+        string memory symbol_,
         address initialOwner
-    ) ERC721(_name, _symbol) Ownable(initialOwner) {
-        baseTokenURI = _baseTokenURI;
+    ) ERC721(name_, symbol_) Ownable(initialOwner) {
+        tokenCounter = 0;
     }
 
-    function mint() public onlyOwner {
-        _safeMint(msg.sender, nextTokenId);
-        nextTokenId++;
-    }
+    function mintNFT(address recipient, string memory tokenURI) public onlyOwner returns (uint256) {
+    uint256 newTokenId = tokenCounter;
+    _mint(recipient, newTokenId); // This already emits the Transfer event (ERC721 standard)
+    _setTokenURI(newTokenId, tokenURI);
+    tokenCounter += 1;
 
-    function _baseURI() internal view override returns (string memory) {
-        return baseTokenURI;
-    }
+    emit Transfer(address(0), recipient, newTokenId);
+
+    return newTokenId;
+}
 }
