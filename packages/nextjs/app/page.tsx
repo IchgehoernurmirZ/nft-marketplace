@@ -6,6 +6,7 @@ import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import UploadNFTForm from "~~/components/UploadNFTForm";
 import { Address } from "~~/components/scaffold-eth";
+import { useEffect, useState } from "react";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
