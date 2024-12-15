@@ -26,6 +26,10 @@ const NFTCollectionView: React.FC = () => {
     setNFTCollection(storedNFTs);
   }, []);
 
+  const truncateText = (text: string, maxLength: number) => {
+    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+  };
+
   const handleDelete = (index: number) => {
     const updatedCollection = nftCollection.filter((_, i) => i !== index);
     setNFTCollection(updatedCollection);
@@ -102,7 +106,7 @@ const NFTCollectionView: React.FC = () => {
             <Col key={nft.id || index} xs={24} sm={12} md={8} lg={6}>
               <Card
                 hoverable
-                cover={<img alt={nft.name} src={nft.image} style={{ height: "200px", objectFit: "cover" }} />}
+                cover={<img alt={nft.name} src={nft.url} style={{ height: "200px", objectFit: "cover" }} />}
                 actions={[
                   <Button key={`edit-${index}`} type="primary" onClick={() => handleEdit(nft, index)}>
                     Edit
@@ -123,7 +127,7 @@ const NFTCollectionView: React.FC = () => {
                       <p>
                         <strong>Metadata:</strong>{" "}
                         <a href={nft.url} target="_blank" rel="noopener noreferrer">
-                          {nft.url}
+                          {truncateText(nft.url, 30)}
                         </a>
                       </p>
                     </>
